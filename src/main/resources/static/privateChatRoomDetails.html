@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Private Chat Room</title>
+    <!-- jQuery 라이브러리 추가 -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- STOMP.js 라이브러리 추가 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <!-- SockJS 라이브러리 추가 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.0/sockjs.min.js"></script> <!-- SockJS 라이브러리 추가 -->
+    <script src="https://cdn.jsdelivr.net/npm/stompjs"></script>
+</head>
+<body>
+<h1>Private Chat Room</h1>
+<!-- 채팅 메시지를 표시할 공간 -->
+<div id="chat-messages"></div>
+
+<!-- 메시지를 입력하는 input 요소 -->
+<input type="text" id="message-input">
+<!-- 메시지 전송 버튼 -->
+<button id="send-message">메시지 전송</button>
+
+<script>
+    $(document).ready(function() {
+        // chatRoomId 가져오기
+        var chatRoomId = new URLSearchParams(window.location.search).get('roomId');
+
+        // JWT 토큰 가져오는 함수
+        function getJwtToken() {
+            // localStorage에서 accessToken 가져오기
+            var accessToken = localStorage.getItem('accessToken');
+            if (accessToken) {
+                return accessToken;
+            } else {
+                console.error('Access token not found in localStorage');
+                return null;
+            }
+        }
+
+
+        // WebSocket 연결 설정
+        var socket = new SockJS('/ws-stomp');
+        var stompClient = Stomp.over(socket);
+        stompClient.connect({ Authorization: 'Bearer ' + getJwtToken() }, function(frame) {
+            console.log('Connected to WebSocket');
+            // 채팅방에 입장하는 요청을 서버로 전송
+            stompClient.send('/sub/chat/private/room/' + chatRoomId, {});
+        });
+
+        // 메시지 전송 버튼 클릭 이벤트 핸들러
+        $('#send-message').click(function() {
+            // 입력된 메시지 가져오기
+            var message = $('#message-input').val();
+            // 메시지가 비어있으면 무시
+            if (!message) return;
+            // 서버로 메시지 전송
+            stompClient.send('/pub/private/chat/message', {}, JSON.stringify({
+                toUser: chatRoomId, // 개인 채팅방에서는 대상 사용자의 ID를 chatRoomId로 사용합니다.
+                content: message
+            }));
+            // 입력창 비우기
+            $('#message-input').val('');
+        });
+
+        // WebSocket으로부터 채팅 메시지를 받는 핸들러 등록
+        stompClient.subscribe('/sub/chat/private/room/' + chatRoomId, function(message) {
+            // 받은 메시지를 표시할 공간에 추가
+            $('#chat-messages').append('<p>' + message.body + '</p>');
+        });
+
+        // 채팅 메시지 목록을 가져오는 함수
+        function fetchChatMessages() {
+            $.ajax({
+                type: 'GET',
+                url: '/api/v1/private/chat/message',
+                contentType: 'application/json',
+                data: { chatRoomId: chatRoomId },
+                headers: { Authorization: 'Bearer ' + getJwtToken() },
+                success: function(response) {
+                    console.log('Chat messages:', response);
+                    // 받은 메시지를 화면에 표시하는 함수 호출
+                    displayChatMessages(response.data);
+                },
+                error: function(xhr, status, error) {
+                    console.error('Failed to fetch chat messages:', error);
+                    // 에러 발생 시 화면에 메시지 표시
+                    $('#chat-messages').append('<p>Error fetching chat messages: ' + error + '</p>');
+                }
+            });
+        }
+
+        // 채팅 메시지를 화면에 표시하는 함수
+        function displayChatMessages(messages) {
+            // 채팅 메시지를 순회하면서 화면에 표시
+            messages.forEach(function(message) {
+                var messageElement = $('<p>').text(message.username + ': ' + message.content);
+                $('#chat-messages').append(messageElement);
+            });
+        }
+
+        // 페이지 로드 시 채팅 메시지 목록을 가져옴
+        fetchChatMessages();
+    });
+</script>
+</body>
+</html>

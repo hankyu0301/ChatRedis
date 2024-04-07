@@ -1,0 +1,106 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.2.2'
+    id 'io.spring.dependency-management' version '1.1.4'
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    sourceCompatibility = '17'
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    runtimeOnly 'com.h2database:h2'
+
+    /**
+     * Swagger
+     * URL : https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-starter-webmvc-ui
+     * 참고 : https://velog.io/@kjgi73k/Springboot3%EC%97%90-Swagger3%EC%A0%81%EC%9A%A9%ED%95%98%EA%B8%B0
+     * 확인 : http://localhost:8080/swagger-ui/index.html
+     * */
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
+
+    /**
+     * Redis
+     * */
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+    /**
+     * WebSocket
+     * 참고 : https://spring.io/guides/gs/messaging-stomp-websocket/#scratch
+     * */
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation 'org.webjars:sockjs-client:1.1.2'
+    implementation 'org.webjars:stomp-websocket:2.3.3-1'
+
+    /**
+     * Firebase
+     * */
+    implementation 'com.google.firebase:firebase-admin:9.1.1'
+
+    /**
+     * Oauth 2
+     * 참고 : https://growth-coder.tistory.com/135
+     * */
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.security:spring-security-test'
+    implementation 'com.google.code.gson:gson:2.10'
+
+    /**
+     * JWT
+     * URL : https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt
+     * 참고 : https://aonee.tistory.com/72
+     * */
+    implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.2'
+    runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.2'
+    runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.2'
+
+
+    /**
+     * QueryDSL
+     * */
+    implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+    annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta"
+    annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+    annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+
+    /**
+     * Test
+     * */
+    implementation 'org.hibernate.validator:hibernate-validator'
+    testImplementation 'org.projectlombok:lombok:1.18.28'
+
+    compileOnly 'org.projectlombok:lombok'
+    runtimeOnly 'com.mysql:mysql-connector-j' // MySQL 드라이버
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    implementation 'org.webjars.bower:bootstrap:4.3.1'
+    implementation 'org.webjars.bower:vue:2.5.16'
+    implementation 'org.webjars.bower:axios:0.17.1'
+    implementation 'org.webjars:sockjs-client:1.1.2'
+    implementation 'org.webjars:stomp-websocket:2.3.3-1'
+
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+
+    implementation("io.netty:netty-resolver-dns-native-macos:4.1.75.Final:osx-aarch_64")
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}

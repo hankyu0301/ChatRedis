@@ -1,0 +1,43 @@
+spring:
+  datasource:
+    driverClassName: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/chatRedis
+    username: myuser
+    password: mypassword
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        default_batch_fetch_size: 100
+        dialect: org.hibernate.dialect.MySQLDialect
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: redis-pw
+
+jwt:
+  secret: 18748a26-b13e-430f-a103-30b3684927db
+  access-token-expiration-minutes: 180 # 3??
+  refresh-token-expiration-minutes: 43200 # 30?
+
+logging:
+  level:
+    root: info
+    # root: debug
+
+api:
+  version-path: /api/v1
+
+file:
+  upload:
+    path: /static
+
+firebase:
+  config:
+    path: /chatredis-a204a-firebase-adminsdk-skj8k-6ff76e7d30.json
+  app:
+    url: https://fcm.googleapis.com/v1/projects/chatredis-a204a/messages:send

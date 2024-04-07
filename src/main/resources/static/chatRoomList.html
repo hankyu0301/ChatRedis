@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Room List</title>
+    <style>
+        /* 채팅방 목록 스타일 */
+        .group-chat-room {
+            color: blue; /* 그룹 채팅방은 파란색으로 표시 */
+            cursor: pointer; /* 클릭 가능한 링크로 설정 */
+        }
+        .private-chat-room {
+            color: green; /* 개인 채팅방은 초록색으로 표시 */
+            cursor: pointer; /* 클릭 가능한 링크로 설정 */
+        }
+    </style>
+</head>
+<body>
+<h1>Chat Room List</h1>
+<ul id="chatRoomList">
+    <!-- 여기에 채팅방 목록이 동적으로 추가될 것입니다. -->
+</ul>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // 사용자 ID
+        var userId = localStorage.getItem('userId'); // 사용자 ID를 적절한 값으로 변경하세요
+
+        // JWT 토큰을 가져오는 함수
+        function getJwtToken() {
+            // localStorage에서 accessToken 가져오기
+            var accessToken = localStorage.getItem('accessToken');
+            if (accessToken) {
+                return accessToken;
+            } else {
+                console.error('Access token not found in localStorage');
+                return null;
+            }
+        }
+
+
+        // 그룹 채팅방 목록을 가져오는 요청
+        $.ajax({
+            type: 'GET',
+            url: '/api/v1/group/chatRoom/list/users/' + userId,
+            contentType: 'application/json',
+            headers: { Authorization: 'Bearer ' + getJwtToken() },
+            success: function (response) {
+                console.log('Group chat rooms:', response);
+                // 그룹 채팅방 목록을 화면에 표시하는 함수 호출
+                displayChatRooms(Object.values(response.data.simpleChatRoomResponseDtoList), 'group');
+            },
+            error: function (xhr, status, error) {
+                console.error('Failed to fetch group chat rooms:', error);
+                // 에러 발생 시 화면에 메시지 표시
+                $('#chatRoomList').append('<li>Error fetching group chat rooms: ' + error + '</li>');
+            }
+        });
+
+// 개인 채팅방 목록을 가져오는 요청
+        $.ajax({
+            type: 'GET',
+            url: '/api/v1/private/chatRoom/list/users/' + userId,
+            contentType: 'application/json',
+            headers: { Authorization: 'Bearer ' + getJwtToken() },
+            success: function (response) {
+                console.log('Private chat rooms:', response);
+                // 개인 채팅방 목록을 화면에 표시하는 함수 호출
+                displayChatRooms(Object.values(response.data.simpleChatRoomResponseDtoList), 'private');
+            },
+            error: function (xhr, status, error) {
+                console.error('Failed to fetch private chat rooms:', error);
+                // 에러 발생 시 화면에 메시지 표시
+                $('#chatRoomList').append('<li>Error fetching private chat rooms: ' + error + '</li>');
+            }
+        });
+
+        // 채팅방 목록을 화면에 표시하는 함수
+        function displayChatRooms(chatRooms, type) {
+            var chatRoomList = $('#chatRoomList');
+            if (!chatRooms || chatRooms.length === 0) { // 배열이 비어있는지 확인
+                // 가져온 채팅방 목록이 비어있을 경우 메시지 표시
+                chatRoomList.append('<li>No chat rooms available</li>');
+                return;
+            }
+            chatRooms.forEach(function(chatRoom) {
+                var listItem = $('<li>').text(chatRoom.chatRoomName); // 채팅방 이름
+                // 그룹 채팅방인지 개인 채팅방인지에 따라 스타일을 다르게 적용
+                if (type === 'group') {
+                    listItem.addClass('group-chat-room');
+                    // 그룹 채팅방에 대한 클릭 이벤트 핸들러 추가
+                    listItem.click(function() {
+                        // 채팅방 이름 클릭 시 /chatRoomDetails 페이지로 이동
+                        window.location.href = '/groupChatRoomDetails/' + chatRoom.chatRoomId;
+                        localStorage.setItem('chatRoomId', chatRoom.chatRoomId)
+                    });
+                } else if (type === 'private') {
+                    listItem.addClass('private-chat-room');
+                    // 개인 채팅방에 대한 클릭 이벤트 핸들러 추가
+                    listItem.click(function() {
+                        // 채팅방 이름 클릭 시 /chatRoomDetails 페이지로 이동
+                        window.location.href = '/privateChatRoomDetails/' + chatRoom.chatRoomId;
+                        localStorage.setItem('chatRoomId', chatRoom.chatRoomId)
+                    });
+                }
+                chatRoomList.append(listItem);
+            });
+
+        }
+    });
+</script>
+</body>
+</html>
