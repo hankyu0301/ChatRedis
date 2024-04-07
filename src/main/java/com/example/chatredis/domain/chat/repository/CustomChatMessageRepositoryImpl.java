@@ -6,8 +6,6 @@ import com.example.chatredis.domain.chat.entity.ChatMessage;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.Expressions;
-import com.querydsl.core.types.dsl.StringPath;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;

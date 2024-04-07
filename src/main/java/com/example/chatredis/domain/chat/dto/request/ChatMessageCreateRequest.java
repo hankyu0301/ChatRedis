@@ -22,7 +22,7 @@ public class ChatMessageCreateRequest {
     @Schema(description = "채팅방 id", example = "1")
     private Long chatRoomId;
 
-    @NotNull(message = "유저 id는 필수 입력 값입니다.")
+    @Null(message = "유저 id는 필수 입력 값입니다.")
     @Schema(description = "유저 id", example = "1", hidden = true)
     private Long userId;
 

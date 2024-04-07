@@ -1,6 +1,5 @@
 package com.example.chatredis.global.config;
 
-import com.example.chatredis.domain.user.repository.UserRepository;
 import com.example.chatredis.global.auth.handler.login.UserAuthenticationEntryPoint;
 import com.example.chatredis.global.auth.jwt.DelegateTokenUtil;
 import com.example.chatredis.global.auth.jwt.JwtTokenizer;

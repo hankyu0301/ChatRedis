@@ -15,7 +15,6 @@ import com.example.chatredis.domain.user.entity.User;
 import com.example.chatredis.domain.user.repository.UserRepository;
 import com.example.chatredis.global.exception.CustomException;
 import com.example.chatredis.global.exception.ExceptionCode;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;

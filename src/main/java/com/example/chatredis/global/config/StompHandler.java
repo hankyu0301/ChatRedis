@@ -1,8 +1,6 @@
 package com.example.chatredis.global.config;
 
 import com.example.chatredis.global.auth.jwt.JwtTokenizer;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;

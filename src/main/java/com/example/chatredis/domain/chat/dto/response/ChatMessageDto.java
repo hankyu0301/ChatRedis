@@ -2,7 +2,6 @@ package com.example.chatredis.domain.chat.dto.response;
 
 import com.example.chatredis.domain.chat.entity.ChatMessage;
 import com.example.chatredis.domain.chat.entity.ChatRoom;
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -12,7 +11,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @Setter

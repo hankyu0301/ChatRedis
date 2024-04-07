@@ -1,9 +1,5 @@
 package com.example.chatredis;
 
-import com.example.chatredis.domain.chat.dto.request.ChatRoomCreateRequest;
-import com.example.chatredis.domain.chat.entity.ChatRoom;
-import com.example.chatredis.domain.chat.repository.ChatRoomJpaRepository;
-import com.example.chatredis.domain.chat.service.ChatRoomService;
 import com.example.chatredis.domain.user.entity.User;
 import com.example.chatredis.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
