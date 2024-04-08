@@ -1,3 +1,4 @@
+CHAT REDIS
 ---
 
 실시간으로 채팅을 할 수 있는 채팅 프로젝트입니다.
@@ -51,4 +52,4 @@ WebSocket을 사용해 실시간으로 채팅을 주고 받을 수 있으며 개
 
 ---
 
-![ChatRedis](https://github.com/hankyu0301/ChatRedis/assets/77604789/12bd1025-fa70-4202-a0c9-094fde88674f)
+![ChatRedis](https://github.com/hankyu0301/ChatRedis/assets/77604789/9c6659d8-36a3-4401-b314-6f7e0af2986c)
