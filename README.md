@@ -15,6 +15,14 @@ WebSocket을 사용해 실시간으로 채팅을 주고 받을 수 있으며 개
 
 ---
 
+### 빌드 방법
+
+```docker
+docker-compose build && docker-compose up
+```
+
+---
+
 ### 사용 Skills
 
 - Java17, SpringBoot, Gradle
