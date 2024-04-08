@@ -14,7 +14,7 @@ public class FCMTokenDto {
     private String id;
 
     @Schema(description = "FCM 토큰", example = "bk3RNwTe3H0:CI2k_HHwgIpoDKCIZvvDMExUdFQ3P1")
-    private String accessToken;
+    private String fcmToken;
 
     @Schema(description = "사용자 ID", example = "1")
     private Long userId;

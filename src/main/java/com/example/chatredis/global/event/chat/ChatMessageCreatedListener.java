@@ -18,14 +18,14 @@ public class ChatMessageCreatedListener {
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Async
-    public void handleAlarm(ChatMessageCreatedEvent event) {
+    public void handleAlarm(ChatMessageCreatedEvent event){
 
         for(Long receiverId : event.getReceiverIds()) {
             FCMMessageDto.Data data = FCMMessageDto.Data.builder()
-                    .receiverId(receiverId)
-                    .senderId(event.getSenderId())
+                    .receiverId(String.valueOf(receiverId))
+                    .senderId(String.valueOf(event.getSenderId()))
                     .senderName(event.getSenderName())
-                    .chatRoomId(event.getChatRoomId())
+                    .chatRoomId(String.valueOf(event.getChatRoomId()))
                     .chatRoomName(event.getChatRoomName())
                     .content(event.getContent())
                     .build();

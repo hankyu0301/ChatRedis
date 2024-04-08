@@ -50,8 +50,7 @@ dependencies {
     /**
      * Firebase
      * */
-    implementation 'com.google.firebase:firebase-admin:9.1.1'
-
+    implementation 'com.google.firebase:firebase-admin:9.2.0'
     /**
      * Oauth 2
      * 참고 : https://growth-coder.tistory.com/135

@@ -20,6 +20,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,7 +40,7 @@ public class PrivateChatMessageController {
      */
     @MessageMapping("/private/chat/message")
     @AssignUserId
-    public void message(PrivateChatMessageCreateRequest req){
+    public void message(@Header("Authorization")String jwt, PrivateChatMessageCreateRequest req){
         privateChatMessageService.sendMessage(req);
     }
 

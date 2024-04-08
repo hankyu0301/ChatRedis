@@ -1,10 +1,7 @@
 package com.example.chatredis.domain.chat.service;
 
 import com.example.chatredis.domain.chat.dto.request.ChatRoomDeleteRequest;
-import com.example.chatredis.domain.chat.dto.response.ChatRoomDeleteResponseDto;
-import com.example.chatredis.domain.chat.dto.response.ChatRoomDto;
-import com.example.chatredis.domain.chat.dto.response.ChatRoomListResponseDto;
-import com.example.chatredis.domain.chat.dto.response.SimpleChatRoomResponseDto;
+import com.example.chatredis.domain.chat.dto.response.*;
 import com.example.chatredis.domain.chat.entity.PrivateChatMessage;
 import com.example.chatredis.domain.chat.entity.PrivateChatRoom;
 import com.example.chatredis.domain.chat.repository.PrivateChatMessageJpaRepository;
@@ -51,21 +48,17 @@ public class PrivateChatRoomService {
 
     @PreAuthorize("@privateChatRoomGuard.check(#chatRoomId)")
     @Transactional(readOnly = true)
-    public ChatRoomDto getChatRoomByIdWithUsers(long userId, long chatRoomId) {
+    public PrivateChatRoomDto getChatRoomByIdWithUsers(long userId, long chatRoomId) {
 
         User user = getUserById(userId);
 
         PrivateChatRoom privateChatRoom = getPrivateChatRoomByIdAndUser(chatRoomId, user);
 
-        return ChatRoomDto.builder()
+
+        return PrivateChatRoomDto.builder()
                 .chatRoomId(privateChatRoom.getId())
                 .chatRoomName(privateChatRoom.getChatRoomName())
-                .userDTOList(
-                        List.of(
-                                UserDto.toDto(privateChatRoom.getFromUser()),
-                                UserDto.toDto(privateChatRoom.getToUser())
-                        )
-                )
+                .userDto(UserDto.toDto(privateChatRoom.getOtherUser(user)))
                 .build();
     }
 

@@ -23,10 +23,10 @@ public class FCMMessageDto {
     @AllArgsConstructor
     @Getter
     public static class Data{
-        private Long receiverId;
-        private Long senderId;
+        private String receiverId;
+        private String senderId;
         private String senderName;
-        private Long chatRoomId;
+        private String chatRoomId;
         private String chatRoomName;
         private String content;
     }

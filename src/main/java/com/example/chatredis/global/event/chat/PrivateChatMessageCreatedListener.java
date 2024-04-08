@@ -21,10 +21,10 @@ public class PrivateChatMessageCreatedListener {
     public void handleAlarm(PrivateChatMessageCreatedEvent event) {
 
         FCMMessageDto.Data data = FCMMessageDto.Data.builder()
-                .receiverId(event.getReceiverId())
-                .senderId(event.getSenderId())
+                .receiverId(String.valueOf(event.getReceiverId()))
+                .senderId(String.valueOf(event.getSenderId()))
                 .senderName(event.getSenderName())
-                .chatRoomId(event.getChatRoomId())
+                .chatRoomId(String.valueOf(event.getChatRoomId()))
                 .chatRoomName(event.getChatRoomName())
                 .content(event.getContent())
                 .build();

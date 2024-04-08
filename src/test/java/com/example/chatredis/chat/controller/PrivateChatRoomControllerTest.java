@@ -4,6 +4,7 @@ import com.example.chatredis.domain.chat.controller.PrivateChatRoomController;
 import com.example.chatredis.domain.chat.dto.request.ChatRoomDeleteRequest;
 import com.example.chatredis.domain.chat.dto.response.*;
 import com.example.chatredis.domain.chat.service.PrivateChatRoomService;
+import com.example.chatredis.domain.user.dto.response.UserDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.DisplayName;
@@ -121,6 +122,42 @@ class PrivateChatRoomControllerTest {
                                 "message":"채팅방 목록 조회 성공"}
                 """));
 
+    }
+
+    @DisplayName("O 성공 채팅방 조회")
+    @Test
+    @WithMockUser
+    void readChatRoom() throws Exception {
+        // Given
+
+        Long userId = 1L;
+        Long chatRoomId = 1L;
+        UserDto userdto = UserDto.builder().id(2L).email("test@test.com").nickname("testnickname").username("testusername").build();
+        PrivateChatRoomDto result = PrivateChatRoomDto.builder().chatRoomName("test").chatRoomId(1L).userDto(userdto).build();
+
+        given(privateChatRoomService.getChatRoomByIdWithUsers(anyLong(), anyLong())).willReturn(result);
+
+        // When
+        mockMvc.perform(get("/api/v1/private/chatRoom/{chatRoomId}/users/{userId}", chatRoomId, userId)
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(
+                        content().json("""
+                        {
+                          "success": true,
+                          "data": {
+                            "chatRoomId": 1,
+                            "chatRoomName": "test",
+                            "userDto": {
+                                "id": 2,
+                                "email": "test@test.com",
+                                "nickname": "testnickname",
+                                "username": "testusername"
+                            }
+                          },
+                          "message": "채팅방 정보 조회 성공"
+                        }
+                """));
     }
 
 

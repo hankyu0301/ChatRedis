@@ -50,7 +50,9 @@ public class ChatMessageService {
         List<ChatRoomUser> chatRoomUsers = chatRoomUserJpaRepository.findChatRoomUserIdsByChatRoom(chatRoom);
         List<Long> chatRoomUserIds =
                 chatRoomUsers.stream()
-                        .map(ChatRoomUser::getId)
+                        .map(ChatRoomUser::getUser)
+                        .map(User::getId)
+                        .filter(i -> !i.equals(user.getId()))
                         .collect(Collectors.toList());
 
         ChatMessageDto chatMessageDto = createChatMessage(user, req.getContent(), chatRoom);

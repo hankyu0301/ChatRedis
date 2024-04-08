@@ -120,4 +120,14 @@ public class PrivateChatRoom {
     public boolean isParticipant(Long userId) {
         return fromUser.getId().equals(userId) || toUser.getId().equals(userId);
     }
+
+    public User getOtherUser(User currentUser) {
+        if (currentUser.equals(fromUser)) {
+            return toUser;
+        } else if (currentUser.equals(toUser)) {
+            return fromUser;
+        } else {
+            throw new IllegalArgumentException("User is not a participant of this chat room");
+        }
+    }
 }

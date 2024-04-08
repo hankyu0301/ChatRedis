@@ -1,37 +1,37 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Page</title>
-    <!-- 부트스트랩 CDN 추가 -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login Page</title>
+  <!-- 부트스트랩 CDN 추가 -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
 
 <div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    <h4>Login</h4>
-                </div>
-                <div class="card-body">
-                    <form id="loginForm">
-                        <div class="form-group">
-                            <label for="email">Email:</label>
-                            <input type="email" id="email" name="email" class="form-control" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="password">Password:</label>
-                            <input type="password" id="password" name="password" class="form-control" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Login</button>
-                    </form>
-                </div>
-            </div>
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header">
+          <h4>Login</h4>
         </div>
+        <div class="card-body">
+          <form id="loginForm">
+            <div class="form-group">
+              <label for="email">Email:</label>
+              <input type="email" id="email" name="email" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label for="password">Password:</label>
+              <input type="password" id="password" name="password" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Login</button>
+          </form>
+        </div>
+      </div>
     </div>
+  </div>
 </div>
 
 <!-- jQuery CDN 추가 -->
@@ -40,62 +40,101 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <!-- 사용자 정의 스크립트 -->
 <script th:inline="javascript">
-    $(document).ready(function () {
-        $('#loginForm').submit(function (event) {
-            event.preventDefault();
-            var formData = {
-                email: $('#email').val(),
-                password: $('#password').val()
-            };
-            $.ajax({
-                type: 'POST',
-                url: '/api/v1/users/login',
-                contentType: 'application/json',
-                data: JSON.stringify(formData),
-                success: function (data, textStatus, request) {
-                    console.log('Login successful');
-                    // 로그인 성공 시 추가 동작 수행
-                    // Authorization 헤더에서 accessToken 가져오기
-                    var accessToken = request.getResponseHeader('Authorization');
-                    // accessToken을 localStorage에 저장
-                    localStorage.setItem('accessToken', accessToken);
-                    localStorage.setItem('userId', data.userId);
-                    // FCM 토큰 발급 API 호출
-                    issueFCMToken(data.userId);
-                    // 다른 추가 동작이 있다면 여기에 추가
-                    window.location.href = '/chatRoomList';
-                },
-                error: function (xhr, status, error) {
-                    console.error('Login failed:', error);
-                    // 로그인 실패 시 추가 동작 수행
-                    // 예를 들어, 오류 메시지 표시 등
-                }
-            });
-        });
 
-        // FCM 토큰 발급 API 호출
-        function issueFCMToken(userId) {
-            $.ajax({
-                type: 'POST',
-                url: '/api/v1/fcm/' + userId,
-                success: function (response) {
-                    console.log('FCM Token issued successfully:', response);
-                    // FCM 토큰 발급 성공 시 추가 동작 수행
-                    // 예를 들어, 다른 페이지로 리다이렉트 등
-                },
-                error: function (xhr, status, error) {
-                    console.error('Failed to issue FCM Token:', error);
-                    // FCM 토큰 발급 실패 시 추가 동작 수행
-                    // 예를 들어, 오류 메시지 표시 등
-                }
-            });
+
+  /*var firebaseConfig = {
+    apiKey: "AIzaSyAcINlLhsrD102-fvvrp-uXn_zWulKSMjM",
+    authDomain: "chatredis-a204a.firebaseapp.com",
+    projectId: "chatredis-a204a",
+    storageBucket: "chatredis-a204a.appspot.com",
+    messagingSenderId: "695061780159",
+    appId: "1:695061780159:web:aa38541992d05fe733580a",
+    measurementId: "G-NXDMK8GD6L"
+  };
+
+  // Firebase 초기화
+  firebase.initializeApp(firebaseConfig);
+
+  // FCM 인스턴스 가져오기
+  const messaging = firebase.messaging();*/
+
+  $(document).ready(function () {
+    $('#loginForm').submit(function (event) {
+      event.preventDefault();
+      var formData = {
+        email: $('#email').val(),
+        password: $('#password').val()
+      };
+      $.ajax({
+        type: 'POST',
+        url: '/api/v1/users/login',
+        contentType: 'application/json',
+        data: JSON.stringify(formData),
+        success: function (data, textStatus, request) {
+          console.log('Login successful');
+          // 로그인 성공 시 추가 동작 수행
+          // Authorization 헤더에서 accessToken 가져오기
+          var accessToken = request.getResponseHeader('Authorization');
+          // accessToken을 localStorage에 저장
+          localStorage.setItem('accessToken', accessToken);
+          localStorage.setItem('userId', data.userId);
+          // FCM 토큰 발급 API 호출
+          //retrieveAndIssueFCMToken(data.userId);
+          // 다른 추가 동작이 있다면 여기에 추가
+          window.location.href = '/chatRoomList';
+        },
+        error: function (xhr, status, error) {
+          console.error('Login failed:', error);
+          // 로그인 실패 시 추가 동작 수행
+          // 예를 들어, 오류 메시지 표시 등
         }
-
-        // 모든 AJAX 요청에 헤더에 토큰 추가
-        $(document).ajaxSend(function (event, xhr, settings) {
-            xhr.setRequestHeader('Authorization', 'Bearer ' + localStorage.getItem('accessToken'));
-        });
+      });
     });
+
+    // FCM 토큰 발급 및 서버에 전송
+    /*function retrieveAndIssueFCMToken(userId) {
+      messaging.getToken(
+              { vapidKey: 'BNcFMQiklaVSK9_O7rpTk7QB2JGQCWLWVc9vSfD7BgbhG9q8GHszBucBD8F1vCS5SIvQMdoPsYGTP2TwKFdsSdE' })
+              .then((token) => {
+                console.log('FCM Token:', token);
+                // FCM 토큰을 서버로 전송
+                issueFCMToken(userId, token);
+              })
+              .catch((error) => {
+                console.error('Error retrieving FCM token:', error);
+              });
+    }*/
+
+    // 서버에 FCM 토큰 전송
+    function issueFCMToken(userId, token) {
+      var requestData = {
+        token: token,
+        userId: userId
+      };
+      $.ajax({
+        type: 'POST',
+        url: '/api/v1/fcm',
+        contentType: 'application/json',
+        data: JSON.stringify(requestData),
+        success: function (response) {
+          console.log('FCM Token issued successfully:', response);
+          // FCM 토큰 발급 성공 시 추가 동작 수행
+          // 예를 들어, 다른 페이지로 리다이렉트 등
+        },
+        error: function (xhr, status, error) {
+          console.error('Failed to issue FCM Token:', error);
+          // FCM 토큰 발급 실패 시 추가 동작 수행
+          // 예를 들어, 오류 메시지 표시 등
+        }
+      });
+    }
+
+    // 모든 AJAX 요청에 헤더에 토큰 추가
+    $(document).ajaxSend(function (event, xhr, settings) {
+      xhr.setRequestHeader('Authorization', 'Bearer ' + localStorage.getItem('accessToken'));
+    });
+  });
+
 </script>
 
 </body>

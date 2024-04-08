@@ -15,8 +15,6 @@ import com.example.chatredis.domain.user.repository.UserRepository;
 import com.example.chatredis.global.event.chat.PrivateChatMessageCreatedEvent;
 import com.example.chatredis.global.exception.CustomException;
 import com.example.chatredis.global.exception.ExceptionCode;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -36,7 +34,6 @@ public class PrivateChatMessageService {
     private final PrivateChatMessageJpaRepository privateChatMessageJpaRepository;
     private final PrivateChatRoomJpaRepository privateChatRoomJpaRepository;
     private final UserRepository userRepository;
-    private final ObjectMapper objectMapper;
     private final RedisTemplate<String,Object> chatRedisTemplate;
     private final ChannelTopic privateChannelTopic;
     private final ApplicationEventPublisher publisher;
@@ -89,11 +86,8 @@ public class PrivateChatMessageService {
     }
 
     private PrivateChatRoom createPrivateChatRoom(User fromUser, User toUser) {
-        return PrivateChatRoom.builder()
-                .chatRoomName(fromUser.getUsername() + " , " + toUser.getUsername())
-                .fromUser(fromUser)
-                .toUser(toUser)
-                .build();
+        PrivateChatRoom privateChatRoom = new PrivateChatRoom(fromUser.getUsername() + " , " + toUser.getUsername(), fromUser, toUser);
+        return privateChatRoomJpaRepository.save(privateChatRoom);
     }
 
     private PrivateChatMessageDto createPrivateChatMessageDto(PrivateChatRoom privateChatRoom, User fromUser, String content) {
@@ -107,11 +101,7 @@ public class PrivateChatMessageService {
     }
 
     private void publishMessage(PrivateChatMessageDto privateChatMessageDto) {
-        try {
-            chatRedisTemplate.convertAndSend(privateChannelTopic.getTopic(), objectMapper.writeValueAsString(privateChatMessageDto));
-        } catch (JsonProcessingException e) {
-            throw new CustomException(ExceptionCode.JSON_PARSING_ERROR);
-        }
+       chatRedisTemplate.convertAndSend(privateChannelTopic.getTopic(), privateChatMessageDto);
     }
 
     private PrivateChatRoom getPrivateChatRoom(User user, Long chatRoomId) {

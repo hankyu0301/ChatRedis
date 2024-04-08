@@ -39,10 +39,15 @@ public class RedisSubscriber {
 
     public void sendPrivateMessage(String publishMessage) {
         try {
+            log.info("Redis에서 발행된 메시지를 받아옵니다.");
+            log.info("발행된 메시지 = " + publishMessage);
+
             // ChatMessageDto 객채로 맵핑
             PrivateChatMessageDto chatMessageDto = objectMapper.readValue(publishMessage, PrivateChatMessageDto.class);
-            System.out.println("chatMessageDto = " + chatMessageDto);
+
             // Websocket 구독자에게 채팅 메시지 Send
+            log.info("Websocket 구독자에게 채팅 메시지를 Send 합니다.");
+            log.info("chatMessageDto = " + chatMessageDto.toString());
             messagingTemplate.convertAndSend("/sub/chat/private/chatRoom/" + chatMessageDto.getChatRoomId(), chatMessageDto);
         } catch (Exception e) {
             log.error(e.getMessage());

@@ -3,31 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Private Chat Room</title>
-    <!-- jQuery 라이브러리 추가 -->
+    <title>Group Chat Room Details</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- STOMP.js 라이브러리 추가 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
-    <!-- SockJS 라이브러리 추가 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.0/sockjs.min.js"></script> <!-- SockJS 라이브러리 추가 -->
     <script src="https://cdn.jsdelivr.net/npm/stompjs"></script>
+    <script src="/webjars/vue/2.5.16/dist/vue.min.js"></script>
+    <script src="/webjars/axios/0.17.1/dist/axios.min.js"></script>
+    <script src="/webjars/sockjs-client/1.1.2/sockjs.min.js"></script>
+    <script src="/webjars/stomp-websocket/2.3.3-1/stomp.min.js"></script>
 </head>
 <body>
-<h1>Private Chat Room</h1>
-<!-- 채팅 메시지를 표시할 공간 -->
-<div id="chat-messages"></div>
+<h1>Private Chat Room Details</h1>
 
-<!-- 메시지를 입력하는 input 요소 -->
-<input type="text" id="message-input">
-<!-- 메시지 전송 버튼 -->
-<button id="send-message">메시지 전송</button>
+<!-- 메시지 표시를 위한 영역 -->
+<div id="messageArea"></div>
+
+<!-- 메시지 입력을 위한 폼 -->
+<form id="messageForm">
+    <input type="text" id="messageInput" placeholder="메시지를 입력하세요">
+    <button type="submit">전송</button>
+</form>
 
 <script>
     $(document).ready(function() {
-        // chatRoomId 가져오기
-        var chatRoomId = new URLSearchParams(window.location.search).get('roomId');
 
-        // JWT 토큰 가져오는 함수
+        // 채팅방 ID 가져오기 (URL에서 추출하거나, 서버에서 제공하는 방식으로 가져올 수 있음)
+        var chatRoomId = localStorage.getItem('chatRoomId'); // 적절한 채팅방 ID로 변경하세요
+        var userId = localStorage.getItem('userId');
+        // JWT 토큰을 가져오는 함수
         function getJwtToken() {
             // localStorage에서 accessToken 가져오기
             var accessToken = localStorage.getItem('accessToken');
@@ -39,70 +43,122 @@
             }
         }
 
+        // 토큰 가져오기
+        var token = getJwtToken();
+        if (!token) {
+            console.error('토큰이 없습니다.');
+            return;
+        }
 
-        // WebSocket 연결 설정
-        var socket = new SockJS('/ws-stomp');
-        var stompClient = Stomp.over(socket);
-        stompClient.connect({ Authorization: 'Bearer ' + getJwtToken() }, function(frame) {
-            console.log('Connected to WebSocket');
-            // 채팅방에 입장하는 요청을 서버로 전송
-            stompClient.send('/sub/chat/private/room/' + chatRoomId, {});
-        });
-
-        // 메시지 전송 버튼 클릭 이벤트 핸들러
-        $('#send-message').click(function() {
-            // 입력된 메시지 가져오기
-            var message = $('#message-input').val();
-            // 메시지가 비어있으면 무시
-            if (!message) return;
-            // 서버로 메시지 전송
-            stompClient.send('/pub/private/chat/message', {}, JSON.stringify({
-                toUser: chatRoomId, // 개인 채팅방에서는 대상 사용자의 ID를 chatRoomId로 사용합니다.
-                content: message
-            }));
-            // 입력창 비우기
-            $('#message-input').val('');
-        });
-
-        // WebSocket으로부터 채팅 메시지를 받는 핸들러 등록
-        stompClient.subscribe('/sub/chat/private/room/' + chatRoomId, function(message) {
-            // 받은 메시지를 표시할 공간에 추가
-            $('#chat-messages').append('<p>' + message.body + '</p>');
-        });
-
-        // 채팅 메시지 목록을 가져오는 함수
-        function fetchChatMessages() {
+        var toUserId = '';
+        function getChatRoomDetails() {
             $.ajax({
                 type: 'GET',
-                url: '/api/v1/private/chat/message',
+                url: '/api/v1/private/chatRoom/' + chatRoomId + '/users/' + userId,
                 contentType: 'application/json',
-                data: { chatRoomId: chatRoomId },
-                headers: { Authorization: 'Bearer ' + getJwtToken() },
-                success: function(response) {
-                    console.log('Chat messages:', response);
-                    // 받은 메시지를 화면에 표시하는 함수 호출
-                    displayChatMessages(response.data);
+                headers: { Authorization: 'Bearer ' + token },
+                success: function (response) {
+                    console.log('Chat room details:', response);
+                    renderChatRoomDetails(response.data); // 채팅방 정보를 렌더링
+                    toUserId = response.data.userDto.id;
                 },
-                error: function(xhr, status, error) {
-                    console.error('Failed to fetch chat messages:', error);
-                    // 에러 발생 시 화면에 메시지 표시
-                    $('#chat-messages').append('<p>Error fetching chat messages: ' + error + '</p>');
+                error: function (xhr, status, error) {
+                    console.error('Failed to fetch chat room details:', error);
                 }
             });
         }
 
-        // 채팅 메시지를 화면에 표시하는 함수
-        function displayChatMessages(messages) {
-            // 채팅 메시지를 순회하면서 화면에 표시
-            messages.forEach(function(message) {
-                var messageElement = $('<p>').text(message.username + ': ' + message.content);
-                $('#chat-messages').append(messageElement);
+        // 채팅방 정보 조회
+        getChatRoomDetails();
+
+        // 채팅방 정보를 화면에 렌더링하는 함수
+        function renderChatRoomDetails(chatRoomDetails) {
+            var chatRoomDetailsElement = $("<div>").text("채팅방 이름: " + chatRoomDetails.chatRoomName);
+            $("#messageArea").prepend(chatRoomDetailsElement); // 채팅 메시지 영역의 맨 위에 채팅방 정보 추가
+        }
+        // websocket & stomp initialize
+        var socket = new SockJS("/ws-stomp");
+        var ws = Stomp.over(socket);
+
+
+
+
+
+        // 최근 메시지 조회 함수
+        function getRecentMessages() {
+            $.ajax({
+                type: 'GET',
+                url: '/api/v1/private/chat/message',
+                contentType: 'application/json',
+                headers: { Authorization: 'Bearer ' + token },
+                data: {
+                    userId: userId,
+                    chatRoomId: chatRoomId,
+                    lastMessageId: '',
+                    size: 20 // 최근 20개의 메시지를 가져옴
+                },
+                success: function (response) {
+                    console.log('Recent messages:', response);
+                    displayMessages(response.data.chatMessageResponseDtoList);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Failed to fetch recent messages:', error);
+                }
             });
         }
 
-        // 페이지 로드 시 채팅 메시지 목록을 가져옴
-        fetchChatMessages();
+        // 연결 완료 시 실행되는 콜백 함수
+        // 최근 메시지 조회
+        getRecentMessages();
+        // 구독 요청
+        ws.connect({"Authorization": token}, function() {
+            console.log("STOMP Connection")
+            // 채팅방 구독
+            ws.subscribe("/sub/chat/private/chatRoom/" +chatRoomId, function(message) {
+                var recv = JSON.parse(message.body);
+                console.log(recv);
+                displayMessage(recv);
+            });
+        }, function(error) {
+            alert("서버 연결에 실패 하였습니다. 다시 접속해 주십시요.");
+            location.href="/chatRoomList";
+        });
+
+        // 메시지 표시 함수
+        function displayMessage(message) {
+            var messageArea = $("#messageArea");
+            var messageElement = $("<div>").text(message.username + ": " + message.content + " (" + message.createdAt + ")");
+            messageArea.append(messageElement);
+        }
+
+        // 메시지 목록 표시 함수
+        function displayMessages(messages) {
+            var messageArea = $("#messageArea");
+            messageArea.empty(); // 기존 메시지 삭제
+            messages.forEach(function(message) {
+                var messageElement = $("<div>").text(message.username + ": " + message.content + " (" + message.createdAt + ")");
+                messageArea.append(messageElement);
+            });
+        }
+
+        // 메시지 전송 폼 제출 이벤트 핸들러
+        $("#messageForm").submit(function(event) {
+            event.preventDefault(); // 폼의 기본 동작 방지
+
+            var messageInput = $("#messageInput").val();
+            if (messageInput.trim() !== "") {
+                // 메시지 발신
+                ws.send("/pub/private/chat/message",{"Authorization":token}, JSON.stringify({
+                    toUser: toUserId,
+                    content: messageInput
+                }));
+
+                // 입력 필드 초기화
+                $("#messageInput").val("");
+            }
+        });
     });
+
 </script>
 </body>
 </html>

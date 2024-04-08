@@ -1,6 +1,7 @@
 package com.example.chatredis.domain.fcm.service;
 
 import com.example.chatredis.domain.fcm.dto.request.FCMMessageDto;
+import com.example.chatredis.domain.fcm.dto.request.FCMTokenCreateRequest;
 import com.example.chatredis.domain.fcm.dto.response.FCMTokenDto;
 import com.example.chatredis.domain.fcm.entity.FCMToken;
 import com.example.chatredis.domain.fcm.repository.FCMTokenRepository;
@@ -32,6 +33,7 @@ public class FCMService {
 
     @Value("${firebase.config.path}")
     private String firebaseConfigPath;
+
     @Value("${firebase.app.url}")
     private String appUrl;
     private final String PREFIX_ACCESS_TOKEN = "Bearer ";
@@ -42,18 +44,18 @@ public class FCMService {
     private final RestTemplate restTemplate;
 
     /*  로그인 시에 호출되는 토큰발급, 갱신 메소드*/
-    public FCMTokenDto saveOrUpdateToken(Long userId) {
+    public FCMTokenDto saveOrUpdateToken(FCMTokenCreateRequest fcmTokenCreateRequest) {
         // 이미 저장된 FCMToken을 삭제하고 새로 저장
-        if(!userRepository.existsById(userId)) {
+        if(!userRepository.existsById(fcmTokenCreateRequest.getUserId())) {
             throw new CustomException(NOT_FOUND_USER);
         }
 
-        fcmTokenRepository.findByUserId(userId).ifPresent(fcmTokenRepository::delete);
+        fcmTokenRepository.findByUserId(fcmTokenCreateRequest.getUserId()).ifPresent(fcmTokenRepository::delete);
 
         FCMToken fcmToken = fcmTokenRepository.save(
                 FCMToken.builder()
-                        .AccessToken(getAccessToken())
-                        .userId(userId)
+                        .AccessToken(fcmTokenCreateRequest.getToken())
+                        .userId(fcmTokenCreateRequest.getUserId())
                         .build()
         );
 
@@ -74,10 +76,10 @@ public class FCMService {
         return fcmToken.of();
     }
 
-    public void sendMessage(FCMMessageDto.Data data) {
+    public void sendMessage(FCMMessageDto.Data data){
 
         //알림 요청 받는 사람의 FCM Token이 존재하는지 확인
-        FCMToken fcmToken = fcmTokenRepository.findByUserId(data.getReceiverId())
+        FCMToken fcmToken = fcmTokenRepository.findByUserId(Long.valueOf(data.getReceiverId()))
                 .orElseThrow(() -> new CustomException(NOT_FOUND_FCM_TOKEN));
 
         //메시지 만들기

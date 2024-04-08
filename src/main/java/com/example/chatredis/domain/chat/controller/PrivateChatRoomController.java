@@ -80,7 +80,7 @@ public class PrivateChatRoomController {
                     description = "채팅방 정보 조회 성공",
                     content = @Content(
                             mediaType = "application/json",
-                            schema = @Schema(implementation = ChatRoomDto.class)
+                            schema = @Schema(implementation = PrivateChatRoomDto.class)
                     )
             ),
             @ApiResponse(
@@ -97,14 +97,14 @@ public class PrivateChatRoomController {
             )
     })
     @GetMapping("/api/v1/private/chatRoom/{chatRoomId}/users/{userId}")
-    public ResponseEntity<BaseResponse<ChatRoomDto>> getChatRoomByIdWithUsers(@Parameter(description = "사용자 ID", example = "1")
+    public ResponseEntity<BaseResponse<PrivateChatRoomDto>> getChatRoomByIdWithUsers(@Parameter(description = "사용자 ID", example = "1")
                                                                             @PathVariable long userId,
                                                                             @Parameter(description = "사용자 ID", example = "1")
                                                                             @PathVariable long chatRoomId) {
 
-        ChatRoomDto result = privateChatRoomService.getChatRoomByIdWithUsers(userId, chatRoomId);
+        PrivateChatRoomDto result = privateChatRoomService.getChatRoomByIdWithUsers(userId, chatRoomId);
 
-        SuccessResponse<ChatRoomDto> response =  SuccessResponse.<ChatRoomDto>builder()
+        SuccessResponse<PrivateChatRoomDto> response =  SuccessResponse.<PrivateChatRoomDto>builder()
                 .data(result)
                 .message("채팅방 정보 조회 성공")
                 .build();

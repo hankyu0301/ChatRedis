@@ -63,7 +63,7 @@ public class CustomPrivateChatMessageRepositoryImpl extends QuerydslRepositorySu
     }
 
     private BooleanExpression limitExpression(Long limit) {
-        return privateChatMessage.id.goe(limit);
+        return privateChatMessage.id.gt(limit);
     }
 
     private List<PrivateChatMessageDto> fetchResults(Pageable pageable, Predicate predicate) {

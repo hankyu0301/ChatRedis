@@ -12,7 +12,6 @@ import org.springframework.data.redis.core.index.Indexed;
 @Getter
 @AllArgsConstructor
 @RedisHash(value = "FCMToken", timeToLive = 60 * 60 * 24 * 60)
-
 public class FCMToken {
 
     @Id
