@@ -50,9 +50,9 @@ services:
       dockerfile: Dockerfile
     environment:
       - SPRING_DATASOURCE_URL=jdbc:mysql://chatRedis-mysql:3306/chatRedis
-      - SPRING_REDIS_HOST=chatRedis-redis
-      - SPRING_REDIS_PORT=6379
-      - SPRING_REDIS_PASSWORD=redis-pw
+      - SPRING_DATA_REDIS_HOST=chatRedis-redis
+      - SPRING_DATA_REDIS_PORT=6379
+      - SPRING_DATA_REDIS_PASSWORD=redis-pw
     ports:
       - "8080:8080"
     depends_on:
