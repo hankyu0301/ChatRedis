@@ -22,6 +22,9 @@ public class RedisConfig {
     @Value("${spring.data.redis.port}")
     private int port;
 
+    @Value("${spring.data.redis.password}")
+    private String password;
+
     //그룹 채팅
     @Bean(name = "groupChannelTopic")
     public ChannelTopic groupChannelTopic() {
@@ -69,6 +72,7 @@ public class RedisConfig {
         RedisStandaloneConfiguration configuration = new RedisStandaloneConfiguration();
         configuration.setHostName(host);
         configuration.setPort(port);
+        configuration.setPassword(password);
         return new LettuceConnectionFactory(configuration);
     }
 
