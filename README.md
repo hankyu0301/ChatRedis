@@ -9,8 +9,6 @@ WebSocket을 사용해 실시간으로 채팅을 주고 받을 수 있으며 개
 - 개발 인원 : 1명
 - 개발 기간 : 2024.02.24~
 
-📄 [Github Link](https://github.com/hankyu0301/ChatRedis)
-
 📄 [API 명세](https://www.notion.so/CHAT-REDIS-API-1f790348c2ed459180cef26e5e1a6944?pvs=21)
 
 ---
@@ -20,7 +18,7 @@ WebSocket을 사용해 실시간으로 채팅을 주고 받을 수 있으며 개
 ```docker
 docker-compose build && docker-compose up -d
 ```
-
+http://localhost:8080/swagger-ui/index.html 에서 API 명세를 확인할 수 있습니다.
 ---
 
 ### 사용 Skills
