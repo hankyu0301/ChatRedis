@@ -18,7 +18,7 @@ WebSocket을 사용해 실시간으로 채팅을 주고 받을 수 있으며 개
 docker-compose build && docker-compose up -d
 ```
 
-http://localhost:8080/swagger-ui/index.html에서 API 명세를 확인할 수 있습니다.
+http://localhost:8080/swagger-ui/index.html 에서 API 명세를 확인할 수 있습니다.
 
 ---
 
