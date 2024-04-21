@@ -1,6 +1,5 @@
 package com.example.chatredis.domain.chat.dto.request;
 
-import com.example.chatredis.global.auth.jwt.JwtTokenizer;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -33,9 +32,4 @@ public class PrivateChatMessageCreateRequest {
     @Schema(description = "메시지 내용", example = "안녕하세요.")
     private String content;
 
-    public void setUserIdFromJwt(String jwt, JwtTokenizer jwtTokenizer) {
-        Map<String, Object> claims = jwtTokenizer.verifyJws(jwt.replace("Bearer ", ""));
-        Long userId = Long.parseLong((String) claims.get("userId"));
-        setUserId(userId);
-    }
 }

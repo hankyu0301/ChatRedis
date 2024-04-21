@@ -8,7 +8,10 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Component;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Map;
+import java.util.Optional;
 
 @Aspect
 @Component
@@ -18,14 +21,40 @@ public class AssignUserIdAspect {
 
     private final JwtTokenizer jwtTokenizer;
 
-    @Around("@annotation(org.springframework.messaging.handler.annotation.MessageMapping) && args(jwt, req)")
-    public Object assignUserIdFromJwt(ProceedingJoinPoint joinPoint, String jwt, Object req) throws Throwable {
-        // 요청 객체의 setUserIdFromJwt 메서드를 호출하여 사용자 ID 설정
-        Method setUserIdFromJwtMethod = req.getClass().getMethod("setUserIdFromJwt", String.class, JwtTokenizer.class);
-        setUserIdFromJwtMethod.invoke(req, jwt, jwtTokenizer);
+    @Around("@annotation(com.example.chatredis.global.aop.AssignUserId) && args(jwt, req)")
+    public void assignUserId(ProceedingJoinPoint joinPoint, String jwt, Object req) throws Throwable {
+        Long userId = extractUserIdFromJwt(jwt);
 
-        // 원래 메서드 실행
-        return joinPoint.proceed(new Object[]{jwt, req});
+        invokeSetUserIdMethod(req, userId);
+
+        joinPoint.proceed();
     }
 
+    private Long extractUserIdFromJwt(String jwt) {
+        Map<String, Object> claims = jwtTokenizer.verifyJws(jwt.replace("Bearer ", ""));
+        return Long.parseLong((String) claims.get("userId"));
+    }
+
+    private void invokeSetUserIdMethod(Object req, Long userId) {
+        Class<?> reqClass = req.getClass();
+        Optional<Method> setUserIdMethod = getSetUserIdMethod(reqClass);
+
+        if (setUserIdMethod.isPresent()) {
+            try {
+                setUserIdMethod.get().invoke(req, userId);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                throw new RuntimeException("Failed to invoke setUserId method", e);
+            }
+        } else {
+            throw new IllegalArgumentException("setUserId method not found in request object");
+        }
+    }
+
+    private Optional<Method> getSetUserIdMethod(Class<?> clazz) {
+        try {
+            return Optional.of(clazz.getMethod("setUserId", Long.class));
+        } catch (NoSuchMethodException e) {
+            return Optional.empty();
+        }
+    }
 }

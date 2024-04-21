@@ -1,6 +1,5 @@
 package com.example.chatredis.domain.chat.dto.request;
 
-import com.example.chatredis.global.auth.jwt.JwtTokenizer;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -10,8 +9,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.Map;
 
 @Getter
 @Setter
@@ -32,11 +29,5 @@ public class ChatMessageCreateRequest {
     @NotBlank(message = "메시지 내용은 필수 입력 값입니다.")
     @Schema(description = "메시지 내용", example = "안녕하세요.")
     private String content;
-
-    public void setUserIdFromJwt(String jwt, JwtTokenizer jwtTokenizer) {
-        Map<String, Object> claims = jwtTokenizer.verifyJws(jwt.replace("Bearer ", ""));
-        Long userId = Long.parseLong((String) claims.get("userId"));
-        setUserId(userId);
-    }
 
 }
