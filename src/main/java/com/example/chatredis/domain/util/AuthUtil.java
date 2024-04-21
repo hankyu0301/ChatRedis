@@ -21,7 +21,7 @@ public class AuthUtil {
     }
 
     public static Long extractUserId() {
-        return Long.parseLong((String) getAuthentication().getPrincipal());
+        return Long.valueOf((String) getAuthentication().getPrincipal());
     }
 
     public static Set<UserRole> extractUserRole() {

@@ -32,7 +32,7 @@ public class AssignUserIdAspect {
 
     private Long extractUserIdFromJwt(String jwt) {
         Map<String, Object> claims = jwtTokenizer.verifyJws(jwt.replace("Bearer ", ""));
-        return Long.parseLong((String) claims.get("userId"));
+        return Long.valueOf((String) claims.get("userId"));
     }
 
     private void invokeSetUserIdMethod(Object req, Long userId) {
@@ -43,10 +43,10 @@ public class AssignUserIdAspect {
             try {
                 setUserIdMethod.get().invoke(req, userId);
             } catch (IllegalAccessException | InvocationTargetException e) {
-                throw new RuntimeException("Failed to invoke setUserId method", e);
+                throw new RuntimeException("setUserId 메소드 실행에 실패했습니다.", e);
             }
         } else {
-            throw new IllegalArgumentException("setUserId method not found in request object");
+            throw new IllegalArgumentException("setUserId 메소드를 찾을 수 없습니다.");
         }
     }
 
