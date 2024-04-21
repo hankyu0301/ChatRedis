@@ -23,7 +23,7 @@ public class ChatRoomUser {
     private Long firstMessageId = 0L;
 
     @ElementCollection
-    @CollectionTable(name = "deleted_message_ids", joinColumns = @JoinColumn(name = "chatroom_user_id"))
+    @CollectionTable(name = "group_chat_deleted_message_ids", joinColumns = @JoinColumn(name = "chatroom_user_id"))
     private List<Long> deletedMessageIds = new ArrayList<>();
 
     @ManyToOne

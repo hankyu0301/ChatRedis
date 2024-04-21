@@ -35,9 +35,11 @@ public class PrivateChatRoom {
     private Long toUserLastMessageId = 0L;
 
     @ElementCollection
+    @CollectionTable(name = "private_chat_fromUser_deleted_message_ids", joinColumns = @JoinColumn(name = "private_chat_room_id"))
     private List<Long> fromUserDeletedMessageIds = new ArrayList<>();
 
     @ElementCollection
+    @CollectionTable(name = "private_chat_toUser_deleted_message_ids", joinColumns = @JoinColumn(name = "private_chat_room_id"))
     private List<Long> toUserDeletedMessageIds = new ArrayList<>();
 
     @ManyToOne
